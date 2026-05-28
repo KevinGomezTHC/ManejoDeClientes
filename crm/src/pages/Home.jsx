@@ -5,16 +5,6 @@ function Home() {
 
   const navigate = useNavigate()
 
-  const handleCrearCliente = () => {
-    console.log('Navegando a crear cliente...')
-    navigate('/crear-cliente')
-  }
-
-  const handleLogin = () => {
-    console.log('Navegando a login...')
-    navigate('/login')
-  }
-
   return (
 
     <div className="home-container">
@@ -31,19 +21,17 @@ function Home() {
 
           <div className="buttons">
 
-            <button
-              onClick={handleCrearCliente}
-              type="button"
-            >
-              Crear Cliente
-            </button>
+            <a href="/#/crear-cliente" style={{ textDecoration: 'none' }}>
+              <button type="button" style={{ width: '100%' }}>
+                Crear Cliente
+              </button>
+            </a>
 
-            <button
-              onClick={handleLogin}
-              type="button"
-            >
-              Ingreso de Acceso
-            </button>
+            <a href="/#/login" style={{ textDecoration: 'none' }}>
+              <button type="button" style={{ width: '100%' }}>
+                Ingreso de Acceso
+              </button>
+            </a>
 
           </div>
 
