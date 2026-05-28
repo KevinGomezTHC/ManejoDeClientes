@@ -56,11 +56,7 @@ function App() {
 
         <Route
           path='/crear-cliente'
-          element={
-            <ProtectedRoute>
-              <CrearCliente />
-            </ProtectedRoute>
-          }
+          element={<CrearCliente />}
         />
 
         <Route

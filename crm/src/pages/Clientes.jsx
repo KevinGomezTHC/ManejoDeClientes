@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useAuth } from '../hooks/useAuth'
+import * as XLSX from 'xlsx'
 import '../styles/clientes.css'
 
 function Clientes() {
@@ -97,11 +98,91 @@ function Clientes() {
     }
   }
 
+  async function eliminarCliente(id) {
+    if (!confirm('¿Está seguro de que desea eliminar este cliente?')) {
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('clientes')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        alert('Error: ' + error.message)
+        return
+      }
+
+      // Registrar eliminación
+      await supabase
+        .from('auditoria')
+        .insert([{
+          usuario_id: user.id,
+          cliente_id: id,
+          accion: 'eliminar',
+          fecha: new Date().toISOString()
+        }])
+
+      alert('Cliente eliminado')
+      cargarClientes()
+    } catch (err) {
+      console.error('Error:', err)
+    }
+  }
+
+  function descargarExcel() {
+    if (clientes.length === 0) {
+      alert('No hay clientes para descargar')
+      return
+    }
+
+    const datosExcel = clientes.map(cliente => ({
+      Empresa: cliente.empresa,
+      NIT: cliente.nit,
+      Dirección: cliente.direccion,
+      Correo: cliente.correo,
+      Contacto: cliente.contacto,
+      Celular: cliente.celular,
+      Fecha: cliente.fecha,
+      Cursos: cliente.cursos,
+      Estado: cliente.estado || 'Recien contactado'
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(datosExcel)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes')
+    
+    const timestamp = new Date().toISOString().split('T')[0]
+    XLSX.writeFile(workbook, `Clientes_${timestamp}.xlsx`)
+  }
+
   if (loading) return <div>Cargando...</div>
 
   return (
     <div className="clientes-container">
       <h1>Clientes</h1>
+      
+      {userRole === 'administrador' && (
+        <div style={{ marginBottom: '20px' }}>
+          <button
+            onClick={descargarExcel}
+            style={{
+              padding: '10px 20px',
+              background: '#2ecc71',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold'
+            }}
+          >
+            📥 Descargar Excel
+          </button>
+        </div>
+      )}
+
       {clientes.length === 0 ? (
         <p>No hay clientes disponibles.</p>
       ) : (
@@ -117,12 +198,34 @@ function Clientes() {
               <p><strong>Estado:</strong> {cliente.estado || 'Recien contactado'}</p>
 
               {userRole === 'administrador' && (
-                <div style={{ marginTop: '10px' }}>
+                <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
                   <button
                     onClick={() => setEditando(cliente.id)}
-                    style={{ marginRight: '10px', padding: '8px 15px', background: '#ff2b2b', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                    style={{
+                      flex: 1,
+                      padding: '8px 15px',
+                      background: '#ff2b2b',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}
                   >
                     Editar
+                  </button>
+                  <button
+                    onClick={() => eliminarCliente(cliente.id)}
+                    style={{
+                      flex: 1,
+                      padding: '8px 15px',
+                      background: '#e74c3c',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Eliminar
                   </button>
                 </div>
               )}
