@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useAuth } from '../hooks/useAuth'
-import * as XLSX from 'xlsx'
 import '../styles/clientes.css'
 
 function Clientes() {
@@ -137,24 +136,37 @@ function Clientes() {
       return
     }
 
-    const datosExcel = clientes.map(cliente => ({
-      Empresa: cliente.empresa,
-      NIT: cliente.nit,
-      Dirección: cliente.direccion,
-      Correo: cliente.correo,
-      Contacto: cliente.contacto,
-      Celular: cliente.celular,
-      Fecha: cliente.fecha,
-      Cursos: cliente.cursos,
-      Estado: cliente.estado || 'Recien contactado'
-    }))
+    // Crear CSV
+    const headers = ['Empresa', 'NIT', 'Dirección', 'Correo', 'Contacto', 'Celular', 'Fecha', 'Cursos', 'Estado']
+    const rows = clientes.map(cliente => [
+      cliente.empresa,
+      cliente.nit,
+      cliente.direccion,
+      cliente.correo,
+      cliente.contacto,
+      cliente.celular,
+      cliente.fecha,
+      cliente.cursos,
+      cliente.estado || 'Recien contactado'
+    ])
 
-    const worksheet = XLSX.utils.json_to_sheet(datosExcel)
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes')
+    let csv = headers.join(',') + '\n'
+    rows.forEach(row => {
+      csv += row.map(cell => `"${cell}"`).join(',') + '\n'
+    })
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
     
     const timestamp = new Date().toISOString().split('T')[0]
-    XLSX.writeFile(workbook, `Clientes_${timestamp}.xlsx`)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `Clientes_${timestamp}.csv`)
+    link.style.visibility = 'hidden'
+    
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   if (loading) return <div>Cargando...</div>
