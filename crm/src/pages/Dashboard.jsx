@@ -62,6 +62,12 @@ function Dashboard() {
         {userRole === 'administrador' && (
           <div style={{ marginBottom: '30px' }}>
             <button
+              onClick={() => navigate('/clientes')}
+              style={{ padding: '12px 24px', background: '#3498db', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '16px', marginRight: '10px' }}
+            >
+              📊 Ver Todos los Clientes
+            </button>
+            <button
               onClick={() => navigate('/manage-users')}
               style={{ padding: '12px 24px', background: '#ff2b2b', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '16px', marginRight: '10px' }}
             >
