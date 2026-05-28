@@ -1,0 +1,55 @@
+.clientes-container {
+
+  width: 100%;
+  min-height: 100vh;
+
+  background: #0f0f0f;
+
+  padding: 40px;
+}
+
+.clientes-container h1 {
+
+  color: #ff2b2b;
+
+  margin-bottom: 40px;
+}
+
+.clientes-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+  gap: 20px;
+}
+
+.cliente-card {
+
+  background: #181818;
+
+  padding: 25px;
+
+  border-radius: 20px;
+
+  border: 1px solid #2b2b2b;
+}
+
+.cliente-card h2 {
+
+  color: white;
+
+  margin-bottom: 20px;
+}
+
+.cliente-card p {
+
+  color: #bdbdbd;
+
+  margin-bottom: 10px;
+}
+
+.cliente-card strong {
+
+  color: white;
+}
